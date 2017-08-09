@@ -1,1 +1,119 @@
-Hello World
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Todo List</title>
+        <!-- Open Sans Font (Google)*/-->
+        <link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
+        
+        <!-- Todo Webpage Styling-->
+        <link rel="stylesheet" type="text/css" href="todo2.css">
+        
+        <!--Google Icons: Maybe used for delete icon
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">-->
+        <meta http-equiv="Cache-control" content="public">
+    </head>
+
+    <body>
+        <div class="buttonGroup">
+            <button onclick="openMainTab(this, 'dashboard')">Dashboard</button>
+            <button id="mainTabDefault" onclick = "openMainTab(this, 'projects')">Projects</button>
+            <button onclick = "openMainTab(this, 'settings')">Settings</button>
+            <button onclick = "openMainTab(this, 'about')">About</button>
+        </div>
+        
+        <div id="mainTabContentWrapper">
+            <div id="dashboard" class = "mainTabContent">
+                <h1>Dashboard</h1>
+                <p>Coming Soon</p>
+            </div>
+            
+            <div id = "projects" class = "mainTabContent">
+                <h1>Projects</h1>
+                <div id="projectMenu">
+                    <h3>Select Project</h3>
+                    <ul id="projectList">
+                        <li id="newProject">
+                            <span class="plus">&#10010;</span>
+                            
+                            <form id = "newProjectForm">
+                                <input id = "newProjectInput" type = "text" placeholder = "New Project" autocomplete = "off">
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div id = "settings" class = "mainTabContent">
+                <h1>Settings</h1>
+                <p>Coming Soon</p>
+                <button onclick = "loadProjects();">Load Projects</button>
+                <button onclick = "saveProjects();">Save Projects</button>
+            </div>
+            
+            <div id = "about" class = "mainTabContent">
+                <h1>About</h1>
+                <p>Todo Version 1.2.0 &copy; 2017 Colin Siles</p>
+                
+                <h2>All your projects, in one place</h2>
+                <p>Todo is a simple, easy to use task manager that extends beyond simply listing tasks</p>
+                
+                <h3>Create Projects</h3>
+                <p>
+                    <b>Easily</b> organize your tasks into projects. <br>
+                    <b>Define</b> project begin and end dates, or create ongoing projects<br>
+                    <b>Assign </b>Tags to projects for even more organization (Coming Soon)<br>
+                    <b>Create Phases</b> To split projects into their components<br>
+                    <b>Create Tasks</b> To keep track of everything
+                </p>
+                
+                <h2>What's new in version 1.2.0</h2>
+                    <ul style="text-align:left; margin-left:25%;">
+                        <li>Save and load your projects manually in the settings tab</li>
+                        <li>Mark tasks to complete today by pressing the green "+" button next to a task</li>
+                        <li>Dashboards Coming Soon...</li>
+                    </ul>
+            </div>
+        </div>
+        
+        <template id = "projectContentTemplateWrapper">
+            <div id = "projectContentTemplate" class = "projectContent">
+                <input type="text" value="Project A" class = "projectHeader"><br>
+                Due:<input type= "date"><br>
+                <textarea placeholder="Project Description"></textarea>
+                <br>
+                <div class="phaseContainer newPhaseContainer">
+                    <h1>&#10010;</h1>
+                    <h3>New Phase</h3>
+                </div>
+            </div>
+        </template>
+        
+        <template id = "projectSelectorTemplateWrapper">
+            <li id = "projectSelectorTemplate">Template Text<span class = "close">&times;</span></li>
+        </template>
+        
+        <template id = "taskTemplateWrapper">
+            <li class = "task" id = "taskTemplate">Template Text<span class = "editTask"> <span class="markTask">+</span><span  class="closeTask">&times;</span></span></li>
+        </template>
+        
+        <template id = "phaseContainerTemplateWrapper">
+            <div id = "phaseContainerTemplate" class = "phaseContainer">
+                <span class = "close">&times;</span>
+                <input onfocus = "this.select();" type = "text" value="Phase A" class="phaseHeader">
+                <ul class = "taskList">
+                    <li class = "newTaskLI">
+                        <span class="plus">&#10010;</span>
+                        
+                        <form class = "newTaskForm">
+                            <input class = "newTaskInput" type = "text" placeholder = "New Task" autocomplete = "off">
+                        </form>
+                    </li>
+                </ul>
+            </div>
+            
+        </template>
+        
+        <script id="source" src="todo2.js"></script>
+        
+    </body>
+</html>

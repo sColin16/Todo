@@ -1,0 +1,301 @@
+* {
+    font-family: "Open Sans";
+}
+
+html, body, .mainTabContent, #mainTabContentWrapper {
+    height: 94%;
+}
+
+input {
+    font-family:"Open Sans";
+    padding: 0;
+    border: none;
+    outline:none;
+}
+       
+.buttonGroup{
+    background-color: #427AA1;
+}
+
+.buttonGroup button{
+    background-color: inherit;
+    border: #4CAF50;
+    color: white;
+    cursor: pointer;
+    float: left;
+    padding: 15px;
+    width:25%;
+    min-width:100px;
+    transition:0.2s;
+    font-size: 100%
+}
+
+.buttonGroup:after {
+    content: "";
+    clear:both;
+    display:table;
+}
+            
+.buttonGroup button:hover {
+    background-color: #315976;
+}
+            
+.buttonGroup button.active {
+    background-color: #315976;
+}
+            
+.mainTabContent {
+    display:none;
+    animation: fadeIn 1s;
+}
+            
+.projectContent {
+    width:70%;
+    height:100%;
+    float:left;
+    margin-left:16px;
+    display:inline-block;
+    background-color:#BFD7EA;
+    text-align:center;
+    overflow-y:auto;
+    animation:fadeIn 1s;
+    position:relative;
+}
+
+.projectContent input{
+    background-color:inherit;
+}
+     
+.projectContent .projectHeader{
+    font-size:24px;
+    text-align:center;
+    background-color:#BFD7EA;
+    margin:8px;
+}
+
+.projectContent .projectHeader:hover{
+    background-color:#8B9DAB;
+}
+
+.phaseHeader {
+    background-color:inherit;
+    width:70%;
+    font-family:"Open Sans";
+    font-size:20px;
+    text-align:center;
+    margin:8px;
+}
+
+.projectContent .phaseHeader:hover {
+    background-color:#8B9DAB;
+}
+
+.projectContent .newTaskInput {
+    font-size:16px;
+}
+
+.projectContent textarea {
+    background-color:#BFD7EA;
+    outline:none;
+    border:none;
+    resize:vertical;
+    overflow:auto;
+    width:50%;
+}
+            
+.projectContent textarea:hover {
+    background-color:#8B9DAB;
+}
+            
+.projectContent input[type=date] {
+    text-align:center;
+    background-color:#BFD7EA;
+}
+            
+.projectContent input[type=date]:hover {
+    background-color:#8B9DAB;
+}
+
+.phaseContainer {
+    width:300px;
+    min-height:300px;
+    border-radius: 5px;
+    background-color: #EBF2FA;
+    display:inline-block;
+    margin:12px;
+    transition: 0.5s;
+    animation: fadeIn 1s;
+    position:relative;
+    overflow-x:hidden;
+    vertical-align: top;
+}
+            
+.phaseContainer:hover {
+    box-shadow: 8px 8px 0 0 rgba(0, 0, 0, 0.5);
+}
+ 
+.phaseContainer ul {
+    margin: 0;
+    padding: 0;
+    transition: 0.2s;
+}
+
+.phaseContainer li{
+    text-align: left;
+    padding: 12px 8px 8px 40px;
+    list-style-type: none;
+    transition:0.2s;
+    position:relative;
+}
+
+.phaseContainer li:nth-child(odd) {
+    background-color:#D6DCE4;
+}
+
+.phaseContainer li:hover{
+    background-color:#ABB1B6;
+    color:white;
+    cursor:pointer;
+}
+
+.phaseContainer li.marked {
+    background-color:#19BA5F;
+    color:white;
+    position:relative;
+    transition:0.2s;
+}
+
+.phaseContainer li.checked {
+    background-color:#7F8F9B;
+    color:white;
+    text-decoration:line-through;
+    position:relative;
+    transition:0.2s;
+}
+
+.phaseContainer li.checked::before {
+    content: '';
+    position: absolute;
+    border-color: #fff;
+    border-style: solid;
+    border-width: 0 2px 2px 0;
+    top: 10px;
+    left: 16px;
+    transform: rotate(45deg);
+    height: 15px;
+    width: 7px;
+}
+
+.phaseContainer h1 {
+    margin-top:100px;
+}
+
+.newPhaseContainer {
+    color:#666;
+}
+
+.newPhaseContainer:hover {
+    color:#000;
+}
+
+.close {
+    right:0;
+    top:0;
+    position:absolute;
+    padding: 10px 16px 10px 16px;
+    display:none;
+    color:white;
+    transition:0.2s;
+}
+
+.editTask {
+    right:0;
+    top:0;
+    position:absolute;
+    padding:10px 0;
+    display:none;
+}
+
+.closeTask {
+    padding: 10px 16px 10px 16px;
+    color:white;
+    background-color:#D94545;
+}
+
+.markTask {
+    padding: 10px 16px 10px 16px;
+    background-color:#128C47;
+    color:white;
+}
+            
+#mainTabContentWrapper {
+    text-align:center;
+}
+
+#projectMenu {
+    width:25%;
+    height:100%;
+    float:left;
+    text-align:left;
+    background-color:#BFD7EA;
+    overflow-y:auto;
+    position:relative;
+}
+            
+#projectMenu h3 {
+    text-align:center;
+}
+            
+#projectMenu ul {
+    position:relative;
+    margin:0;
+    padding:0;
+}
+
+#projectMenu li{
+    padding: 12px 8px 8px 40px;
+    transition:0.2s;
+    background-color:#BFD7EA;
+    position:relative;
+}
+            
+#projectMenu li:nth-child(odd) {
+    background-color:#AEC4D5;
+}
+            
+#projectMenu li:hover, #projectMenu li.active{
+    background-color:#8B9DAB;
+    color:white;
+    cursor:pointer;
+}
+            
+#projectMenu li:hover > .close {
+    display:block;
+    background-color:#D94545;
+}
+ 
+.phaseContainer:hover > .close {
+    display:block;
+    background-color:#D94545;
+}
+
+.phaseContainer li:hover > .editTask {
+    display:block;
+}
+
+.plus {
+    position:absolute;
+    margin-left: -25px;
+}
+            
+#projectMenu input[type=text] {
+    width:100%;
+    font-family:"Open Sans";
+    font-size:16px;
+    background-color:inherit;
+}
+            
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
