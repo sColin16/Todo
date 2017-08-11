@@ -52,12 +52,11 @@
             
             <div id = "about" class = "mainTabContent">
                 <h1>About</h1>
-                <p>Todo Version 1.2.0 &copy; 2017 Colin Siles</p>
+                <p>Todo Version 1.2.1 &copy; 2017 Colin Siles</p>
                 
                 <h2>All your projects, in one place</h2>
                 <p>Todo is a simple, easy to use task manager that extends beyond simply listing tasks</p>
                 
-                <h3>Create Projects</h3>
                 <p>
                     <b>Easily</b> organize your tasks into projects. <br>
                     <b>Define</b> project begin and end dates, or create ongoing projects<br>
@@ -66,12 +65,18 @@
                     <b>Create Tasks</b> To keep track of everything
                 </p>
                 
+                <h2>What's new in version 1.2.1</h2>
+                <ul style="text-align:left; margin-left:25%;">
+                    <li>Minor Bug Fixes</li>
+                    <li>Backend changes to prepare for more secure and efficient <br>saving and loading operations</li>
+                </ul>
+                
                 <h2>What's new in version 1.2.0</h2>
-                    <ul style="text-align:left; margin-left:25%;">
-                        <li>Save and load your projects manually in the settings tab</li>
-                        <li>Mark tasks to complete today by pressing the green "+" button next to a task</li>
-                        <li>Dashboards Coming Soon...</li>
-                    </ul>
+                <ul style="text-align:left; margin-left:25%;">
+                    <li>Save and load your projects manually in the settings tab</li>
+                    <li>Mark tasks to complete today by pressing the green "+" button next to a task</li>
+                    <li>Dashboards Coming Soon...</li>
+                </ul>
             </div>
         </div>
         
@@ -89,11 +94,11 @@
         </template>
         
         <template id = "projectSelectorTemplateWrapper">
-            <li id = "projectSelectorTemplate">Template Text<span class = "close">&times;</span></li>
+            <li id = "projectSelectorTemplate"><span class = "name"></span><span class = "close">&times;</span></li>
         </template>
         
         <template id = "taskTemplateWrapper">
-            <li class = "task" id = "taskTemplate">Template Text<span class = "editTask"> <span class="markTask">+</span><span  class="closeTask">&times;</span></span></li>
+            <li class = "task" id = "taskTemplate"> <span class= "name"> </span><span class = "editTask"> <span class="markTask">+</span><span  class="closeTask">&times;</span></span></li>
         </template>
         
         <template id = "phaseContainerTemplateWrapper">
