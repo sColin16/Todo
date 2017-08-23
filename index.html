@@ -52,7 +52,7 @@
             
             <div id = "about" class = "mainTabContent">
                 <h1>About</h1>
-                <p>Todo Version 1.2.1 &copy; 2017 Colin Siles</p>
+                <p>Todo Version 1.3.0 &copy; 2017 Colin Siles</p>
                 
                 <h2>All your projects, in one place</h2>
                 <p>Todo is a simple, easy to use task manager that extends beyond simply listing tasks</p>
@@ -65,26 +65,20 @@
                     <b>Create Tasks</b> To keep track of everything
                 </p>
                 
-                <h2>What's new in version 1.2.1</h2>
+                <h2>What's new in version 1.3.0</h2>
                 <ul style="text-align:left; margin-left:25%;">
-                    <li>Minor Bug Fixes</li>
-                    <li>Backend changes to prepare for more secure and efficient <br>saving and loading operations</li>
-                </ul>
-                
-                <h2>What's new in version 1.2.0</h2>
-                <ul style="text-align:left; margin-left:25%;">
-                    <li>Save and load your projects manually in the settings tab</li>
-                    <li>Mark tasks to complete today by pressing the green "+" button next to a task</li>
-                    <li>Dashboards Coming Soon...</li>
+                    <li>New, more efficient saving and loading system</li>
+                    <li>Projects are automatically recalled from the previous session</li>
+                    <li>Projects are automatically saved for use in a future session</li>
                 </ul>
             </div>
         </div>
         
         <template id = "projectContentTemplateWrapper">
-            <div id = "projectContentTemplate" class = "projectContent">
+            <div id = "projectContentTemplate" class = "projectContent" style="display:none">
                 <input type="text" value="Project A" class = "projectHeader"><br>
-                Due:<input type= "date"><br>
-                <textarea placeholder="Project Description"></textarea>
+                Due:<input type= "date" class = "projectDueDate"><br>
+                <textarea placeholder="Project Description" class = "projectDescription"></textarea>
                 <br>
                 <div class="phaseContainer newPhaseContainer">
                     <h1>&#10010;</h1>

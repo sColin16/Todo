@@ -1,38 +1,20 @@
 //open up the default tab
-    document.getElementById("mainTabDefault").onclick();
+document.getElementById("mainTabDefault").onclick();
 
-function redoListeners(){
-    function addNewProject(){
-        window.event.preventDefault();
-        var newProjectInput = document.getElementById("newProjectInput");
-        
-        //obtain project name
-        var projectName = newProjectInput.value;
+//add the event listener for new project
+document.getElementById("newProjectForm").addEventListener("submit", addNewProject, false);
 
-        //clean up interface
-        newProjectInput.value = "";
-
-        //error checking: make sure project name is valid
-        if(projectName === ""){
-            return;
-        }
-
-        if(stringContains(projectName, invalidClassSelectors)){
-            alert("Invalid Name. Special characters are not allowed");
-            return;
-        }
-        
-        addProject(projectName);
-        openProject(projectName);
-    }
-    
-    //add the event listener for new project
-    document.getElementById("newProjectForm").addEventListener("submit", addNewProject, false);
-}
-
-redoListeners();
+projectArray = [];
 
 var invalidClassSelectors = "~ ! @ $ % ^ & * ( ) + = , . / ' \" ; : ? > < [ ] \\ { } | ` #".split(" ");
+
+//load up the projects, if used before
+if(!localStorage.getItem("newContent")) loadProjects();
+
+//set autosaving function
+window.setInterval(function(){
+    saveProjects(true);
+}, 5000);
 
 //helper functions
 function getProjectClassName(projectName){
@@ -79,7 +61,7 @@ function addProjectSelector(projectName){
     return projectSelector;
 }
 
-function addProjectContent(projectName){
+function addProjectContent(projectName, dueDate, description){
     //create content from appropriate template
     var projectContent = fromTemplate("projectContent");
     
@@ -90,13 +72,18 @@ function addProjectContent(projectName){
     projectContent.classList.add(className);
     projectContent.getElementsByClassName("projectHeader")[0].setAttribute("value", projectName);
     
+    if(dueDate) projectContent.getElementsByClassName("projectDueDate")[0].setAttribute("value", dueDate);
+    if(description) projectContent.getElementsByClassName("projectDescription")[0].value = description;
+    
     //add event listener to add phases within content container
     projectContent.getElementsByClassName("newPhaseContainer")[0].addEventListener("click", function(){addPhase(projectName)}, false);
+    //add blur event listener for due date input
+    //add blur event listener for description input
     
     return projectContent;
 }
 
-function addProject(projectName) {
+function addProject(projectName, dueDate, description) {
     //obtain references to necessary page elements
     var projectList = document.getElementById("projectList");
     var projectContainer = document.getElementById("projects");
@@ -106,11 +93,15 @@ function addProject(projectName) {
     projectList.insertBefore(projectSelector, document.getElementById("newProject"));
     
     //append the project content division to the page
-    var projectContent = addProjectContent(projectName);
+    var projectContent = addProjectContent(projectName, dueDate, description);
     projectContainer.appendChild(projectContent);
+    
+    //add due date and description to phase object
+    projectArray.push(new Project(projectName, dueDate, description));
+    
 }
 
-function addPhase(projectName){
+function addPhase(projectName, phaseName){
     //create content from appropriate template
     var phaseContainer = fromTemplate("phaseContainer");
     
@@ -120,7 +111,7 @@ function addPhase(projectName){
     var newPhaseContainer = document.querySelector("." + className +" .newPhaseContainer");
     
     //set the phase number attribute of the new phase container
-    var phaseNumber = 1;
+    var phaseNumber = 0;
     var phases = projectContent.getElementsByClassName("phaseContainer");
     
     if(phases.length > 1){
@@ -128,16 +119,29 @@ function addPhase(projectName){
     }
     
     //set attributes of the phase container
-    //phaseContainer.classList.add(className + "Phase" + phaseNumber); <--- Can this be deleted?
     phaseContainer.classList.add("Phase" + phaseNumber);
-    
     phaseContainer.setAttribute("phaseNumber", phaseNumber);
-    phaseContainer.getElementsByClassName("phaseHeader")[0].setAttribute("value", "Phase " + phaseNumber);
+    
+    if(!phaseName){
+        phaseName = "Phase " + phaseNumber;
+    }
+        
+    phaseContainer.getElementsByClassName("phaseHeader")[0].setAttribute("value", phaseName);
     
     //add event listeners to modify the elements of the phase container
     phaseContainer.getElementsByClassName("close")[0].addEventListener("click", function(){deletePhase(phaseContainer)});
     phaseContainer.getElementsByClassName("phaseHeader")[0].addEventListener("blur", function(){this.setAttribute("value", this.value)}, false);
     phaseContainer.getElementsByClassName("newTaskForm")[0].addEventListener("submit", addNewTask, false);
+    
+    //append a new phase to the appropriate project object
+    var projectObject = projectWithName(projectName);
+    var phaseObject = new Phase(phaseName, phaseNumber);
+    projectObject.phases[phaseNumber] = phaseObject;
+    phaseContainer.phaseObject = phaseObject;
+    console.log(phaseContainer.phaseObject);
+    
+    //append the phase container to the project content container
+    projectContent.insertBefore(phaseContainer, newPhaseContainer);
     
     function addNewTask(){
         window.event.preventDefault();
@@ -157,9 +161,6 @@ function addPhase(projectName){
         
         addTask(projectName, phaseContainer.getAttribute("phaseNumber"), taskName);
     }
-    
-    //append the phase container to the project content container
-    projectContent.insertBefore(phaseContainer, newPhaseContainer);
 }
 
 function addTask(projectName, phaseNumber, taskName, checked, marked){
@@ -182,31 +183,101 @@ function addTask(projectName, phaseNumber, taskName, checked, marked){
     if(marked) task.classList.add("marked");
     
     //add event listeners
-    task.addEventListener("click", function(){if(!window.event.target.classList.contains("markTask")) task.classList.toggle('checked')}, false);
-    task.getElementsByClassName("closeTask")[0].addEventListener("click", function(){task.parentElement.removeChild(task)}, false);
-    task.getElementsByClassName("markTask")[0].addEventListener("click", function(){task.classList.toggle("marked")}, false);
+    task.addEventListener("click", function(){toggleCheck(task)}, false)
+    task.getElementsByClassName("closeTask")[0].addEventListener("click", function(){deleteTask(task)}, false);
+    task.getElementsByClassName("markTask")[0].addEventListener("click", function(){toggleMarked(task)}, false);
+    
+    //append a task object to the correct object
+    var projectObject = projectWithName(projectName);
+    var phaseObject = projectObject.phases[phaseNumber]
+    var taskObject = new Task(taskName, checked, marked);
+    phaseObject.tasks.push(taskObject);
+    
+    //append the task object to the task DOM element
+    task.taskObject = taskObject;
     
     //append the task to the appropriate place
     taskList.insertBefore(task, newTask);
+    
+    //helper functions
+    function toggleCheck(task){
+        if(!window.event.target.classList.contains("markTask")){
+            task.classList.toggle('checked');
+            task.taskObject.checked = !task.taskObject.checked
+        }
+    }
+    
+    function toggleMarked(task){
+        task.classList.toggle("marked");
+        task.taskObject.marked = !task.taskObject.marked;
+    }
+    
+    function deleteTask(task){
+        task.parentElement.removeChild(task);
+        var index = phaseObject.tasks.indexOf(taskObject);
+        phaseObject.tasks.splice(index, 1);
+    }
 }
 
+function addNewProject(){
+    window.event.preventDefault();
+    var newProjectInput = document.getElementById("newProjectInput");
+    
+    //obtain project name
+    var projectName = newProjectInput.value;
+    
+    //clean up interface
+    newProjectInput.value = "";
+    
+    //error checking: make sure project name is valid
+    if(projectName === ""){
+        return;
+    }
+    
+    if(stringContains(projectName, invalidClassSelectors)){
+        alert("Invalid Name. Special characters are not allowed");
+        return;
+    }
+    
+    if(projectWithName(projectName.trim()) !== -1){
+        alert("A project with that name alread exists");
+        return;
+    }
+    
+    addProject(projectName);
+    openProject(projectName);
+}
 
 //Content removal functions
 function deleteProject(projectName) {
     if (confirm("Are you sure you want to delete " + projectName + "?")) {
-        var projectElements = document.getElementsByClassName(getProjectClassName(projectName));
-        for(var i = 0, n = projectElements.length; i<n; i++){
-            projectElements[0].parentElement.removeChild(projectElements[0]);
-        }
+        var projectElement = document.getElementsByClassName(getProjectClassName(projectName))[0];
+        projectElement.parentElement.removeChild(projectElement);
         
+        var projectObject = projectWithName(projectName);
+        var index = projectArray.indexOf(projectObject);
+        projectArray.splice(index, 1);
     }
 }
 
 function deletePhase(phase){
     var phaseName = phase.getElementsByClassName("phaseHeader")[0].value;
+    console.log(phase.phaseObject);
     if(confirm("Are you sure you want to delete " + phaseName +  "?")){
+        
+        delete phase.phaseObject;
         phase.parentElement.removeChild(phase);
     }
+}
+
+function deletePhaseTest(projectName, phaseNumber){
+    var projectElement = document.querySelector("div." + getProjectClassName(projectName))[0];
+    var phaseElement = projectElement.getElementsByClassName("Phase" + phaseNumber)[0];
+    phaseElement.parentElement.removeChild(phaseElement);
+    
+    var projectObject = projectWithName(projectName);
+    var index = projectArray.indexOf(projectObject);
+    projectArray[index] = undefined;
 }
 
 //Content viewing functions
@@ -250,6 +321,7 @@ function openProject(projectName) {
     //modify appropriate atributes
     document.querySelector("div." + className).style.display = "block";
     document.querySelector("li."+className).classList.add("active");
+    console.log(document.querySelector("div." + className));
 }
 
 //content storage objects
@@ -272,70 +344,50 @@ function Task(name, checked, marked){
     this.marked = marked;
 }
 
+//returns the reference to the project object
+function projectWithName(projectName){
+    for(var i = 0, n = projectArray.length; i<n; i++){
+        if(projectArray[i].name === projectName){
+            return projectArray[i];
+        }
+    }
+    return -1;
+}
+
 //Not yet implemented
 function changeName(className, newName){
     document.querySelector("div." + className + " input").value = newName;
     document.querySelector("li."+className).childNodes[0].data = newName;
 }
 
-//TODO:Modify to use Project, Phase and Task Objects
-function saveProjects(){
-    var cache = document.getElementById("projects").outerHTML;
-    localStorage.setItem("content", cache);
+function saveProjects(autosaved){
+    var cache = JSON.stringify(projectArray);
+    localStorage.setItem("newContent", cache);
+    if(autosaved) console.log("Projects Autosaved");
 }
 
 function loadProjects(){
-    document.getElementById("projects").outerHTML = localStorage.getItem("content");
-    redoListeners();
+    var cache = JSON.parse(localStorage.getItem("newContent"));
+    var project;
+    var phase;
+    var task;
     
-    redoProjectSelectorListeners();
-    redoProjectContentListeners();
-    redoPhaseContainerListeners();
-    redoTaskListeners();
-}
-
-
-//TODO: Deprecate and delete
-function redoProjectSelectorListeners(){
-    var projectSelectors = document.querySelectorAll("#projectMenu li");
-
-    for(var i = 0, n = projectSelectors.length - 1; i<n; i++){
-        projectSelectors[i].addEventListener("click", function(){openProject(this.firstChild.data, window.event)}, false);
-        projectSelectors[i].getElementsByClassName("close")[0].addEventListener("click", function(){deleteProject(this.parentElement.firstChild.data)}, false);
+    for(var i = 0, n = cache.length; i<n; i++){
+        project = cache[i];
+        addProject(project.name, project.dueDate, project.description);
+        for(var j = 0, m=project.phases.length; j<m; j++){
+            phase = project.phases[j];
+            addPhase(project.name, phase.name);
+            for(var k = 0; k<phase.tasks.length; k++){
+                task = phase.tasks[k]
+                addTask(project.name, phase.number, task.name, task.checked, task.marked);
+            }
+        }
     }
-}
-
-function redoProjectContentListeners(){
-    var projectContent = document.getElementsByClassName("projectContent");
     
-    for(var i = 0, n = projectContent.length; i<n; i++){
-        projectContent[i].getElementsByClassName("newPhaseContainer")[0].addEventListener("click",
-        function(){
-            var className = "Project" + this.parentElement.getElementsByClassName("projectHeader")[0].value.replace(/\s/g, '');
-            addPhase(className);
-        }, false);
-    }
-}
-
-function redoPhaseContainerListeners(){
-    var phaseContainers = document.querySelectorAll(".phaseContainer:not(.newPhaseContainer)");
+    document.getElementById("mainTabDefault").onclick();
+    openProject(projectArray[0].name);
+    console.log(projectArray[0].name);
+    console.log("Projects Loaded");
     
-    for(var i = 0, n = phaseContainers.length; i<n; i++){
-        phaseContainers[i].getElementsByClassName("close")[0].addEventListener("click", function(){deletePhase(this.parentElement)}, false);
-        phaseContainers[i].getElementsByClassName("newTaskForm")[0].addEventListener("submit", function(){addTask(window.event, this.parentElement.parentElement.parentElement)}, false)
-        phaseContainers[i].getElementsByClassName("phaseHeader")[0].addEventListener("blur", function(){this.setAttribute("value", this.value)}, false);
-    }
 }
-
-function redoTaskListeners(){
-    var tasks = document.getElementsByClassName("task");
-    console.log(tasks);
-    
-    for(var i = 0, n = tasks.length; i<n; i++){
-        tasks[i].addEventListener("click", function(){toggleCheck(window.event, this)}, false);
-        tasks[i].getElementsByClassName("closeTask")[0].addEventListener("click", function(){deleteTask(this.parentElement.parentElement)}, false);
-        tasks[i].getElementsByClassName("markTask")[0].addEventListener("click", function(){toggleMarked(this.parentElement.parentElement)}, false);
-    }
-}
-
-hideProjects();
