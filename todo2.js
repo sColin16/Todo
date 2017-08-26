@@ -9,7 +9,7 @@ projectArray = [];
 var invalidClassSelectors = "~ ! @ $ % ^ & * ( ) + = , . / ' \" ; : ? > < [ ] \\ { } | ` #".split(" ");
 
 //load up the projects, if used before
-if(!localStorage.getItem("newContent")) loadProjects();
+if(localStorage.getItem("newContent") !== undefined) loadProjects();
 
 //set autosaving function
 window.setInterval(function(){
@@ -386,8 +386,7 @@ function loadProjects(){
     }
     
     document.getElementById("mainTabDefault").onclick();
-    openProject(projectArray[0].name);
-    console.log(projectArray[0].name);
-    console.log("Projects Loaded");
+    if(projectArray.length > 0) openProject(projectArray[0].name);
+
     
 }
