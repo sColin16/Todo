@@ -9,7 +9,7 @@ projectArray = [];
 var invalidClassSelectors = "~ ! @ $ % ^ & * ( ) + = , . / ' \" ; : ? > < [ ] \\ { } | ` #".split(" ");
 
 //load up the projects, if used before
-if(localStorage.getItem("newContent") !== undefined) loadProjects();
+if(localStorage.getItem("newContent") !==  null) loadProjects();
 
 //set autosaving function
 window.setInterval(function(){
