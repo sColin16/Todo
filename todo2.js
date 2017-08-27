@@ -367,6 +367,7 @@ function saveProjects(autosaved){
 }
 
 function loadProjects(){
+    projectArray = [];
     var cache = JSON.parse(localStorage.getItem("newContent"));
     var project;
     var phase;
